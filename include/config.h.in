@@ -1,0 +1,6 @@
+#pragma once
+
+#define CudaBasedPathTracingRenderer_VERSION_MAJOR @CudaBasedPathTracingRenderer_VERSION_MAJOR@
+#define CudaBasedPathTracingRenderer_VERSION_MINOR @CudaBasedPathTracingRenderer_VERSION_MINOR@
+
+#define EX_GPU
