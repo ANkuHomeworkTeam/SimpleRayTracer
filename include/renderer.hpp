@@ -15,8 +15,13 @@ namespace Renderer
         CUDA
     };
 
+    struct RenderConfig {
+        int width = 960;
+        int height = 540;
+        bool gamma = true;
+    };
+
     ErrorCode init(RenderEnv env);
-    ErrorCode render();
 
     using id_t = unsigned int;
 
@@ -36,6 +41,7 @@ namespace Renderer
         
     };
     
+    ErrorCode render(Vec3** pixels);
 
     namespace Material
     {
@@ -51,6 +57,21 @@ namespace Renderer
     namespace Texture{
         id_t createSolid(const Vec3& rgb);
     };
+
+    struct Camera
+    {
+        float vfov;
+        float aspect;
+        float focusDistance;
+        float aperture;
+        Vec3 position;
+        Vec3 lookat;
+    };
+
+    void setCamera(float vfov, float aspect, float focusDistance,
+        float aperture, Vec3 position, Vec3 lookat);
+
+    void setRenderConfig(int width, int height, bool gamma = true);
 
 };
 

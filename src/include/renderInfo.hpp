@@ -4,6 +4,7 @@
 #define __RENDER_INFO_HPP__
 
 #include "renderer.hpp"
+#include <vector>
 namespace Renderer
 {
     enum class MaterialType
@@ -60,6 +61,17 @@ namespace Renderer
         id_t            id;
         Vec3            v1;
     };
+
+    extern RenderEnv globalEnv;
+
+    extern std::vector<Vec3> vertexBuffer;
+    extern std::vector<TextureInfo> textureBuffer;
+    extern std::vector<MaterialInfo> materialBuffer;
+    extern std::vector<ObjectInfo> objectBuffer;
+
+    extern Camera cam;
+
+    extern RenderConfig renderConfig;
 
 }; // namespace Renderer
 
