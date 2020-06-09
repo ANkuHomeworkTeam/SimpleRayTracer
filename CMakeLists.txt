@@ -11,28 +11,28 @@ project(PathTracingRenderer VERSION 1.0
 enable_language(CUDA)
 
 set(RendererBase "${PROJECT_SOURCE_DIR}/src")
-set(RendererPlatform "${PROJECT_SOURCE_DIR}/platform")
-set(RendererCuda "${RendererPlatform}/cuda")
 
 configure_file(
     "${PROJECT_SOURCE_DIR}/include/config.h.in"
     "${PROJECT_BINARY_DIR}/include/config.h")
 
 include_directories(
+    "${PROJECT_SOURCE_DIR}/extern"
     "${PROJECT_SOURCE_DIR}/include"
     "${PROJECT_BINARY_DIR}/include"
-    "${RendererBase}/include"
-    "${RendererCuda}/include")
+    "${RendererBase}/include")
 
 set(CMAKE_BUILD_RPATH ".build")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O3")
+
+# set(CMAKE_CUDA_FLAGS "-dc -rdc=true -c" )
 
 add_subdirectory(platform)
 add_subdirectory(src lib)
 add_subdirectory(apps bin)
-
 
 

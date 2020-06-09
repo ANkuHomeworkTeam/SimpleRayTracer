@@ -1,67 +1,77 @@
 #include "cudaRenderer.hpp"
+#include "maths/random.hpp"
+#include "renderInfo.hpp"
+#include "renderer.hpp"
 #include "tasks.hpp"
+#include "objects.hpp"
+#include "BSDFs.hpp"
+#include "details.hpp"
 #include <cuda_runtime.h>
 #include <iostream>
 
 using namespace std;
-using namespace Renderer;
 
-bool Cuda::checkCudaSupport() {
-    int nDevices;
-    cudaGetDeviceCount(&nDevices);
-    if (nDevices == 0) return false;
-    return true;
-}
+namespace Renderer
+{
+    namespace Cuda
+    {
+        inline
+        cudaError_t checkCudaError() {
+            auto error = cudaGetLastError();
+            if (error != 0)
+                cerr<<" - Cuda Error: "<<error<<endl
+                    <<"   "<<cudaGetErrorString(error)<<endl;
+            return error;
+        }
+        bool checkCudaSupport() {
+            int nDevices;
+            cudaGetDeviceCount(&nDevices);
+            if (nDevices == 0) return false;
+            return true;
+        }
 
-ErrorCode Cuda::cudaRender(Vec3** pixels) {
-    if (globalEnv == RenderEnv::UNDEFINE) {
-        return ErrorCode::NOT_INIT;
+        ErrorCode cudaRender(Vec3** pixels) {
+#       pragma region CHECK_ENV_AND_CUDA
+            if (globalEnv == RenderEnv::UNDEFINE) {
+                return ErrorCode::NOT_INIT;
+            }
+            else if (globalEnv != RenderEnv::CUDA) {
+                return ErrorCode::ENV_NOT_SUPPORT;
+            }
+#       pragma endregion
+
+        unsigned int width = renderConfig.width;
+        unsigned int height = renderConfig.height;
+        unsigned int sumpleNums = renderConfig.sampleNums;
+
+#       pragma region INIT
+        initRandom(sumpleNums);
+        initRenderConfig();
+        initRayGenerator();
+        initTexture();
+        initMaterial();
+        initObjects();
+#       pragma endregion
+
+#       pragma region CONFIG_RENDER_KERNEL
+        dim3 blockInfo{width, height};
+        dim3 threadInfo{sumpleNums};
+#       pragma endregion
+
+#       pragma region RENDER
+        Vec3* generatedPixels;
+        cudaMallocManaged(&generatedPixels, sizeof(Vec3)*width*height);
+
+        renderTask<<<blockInfo, threadInfo>>>(generatedPixels);
+
+        cudaDeviceSynchronize();
+
+        if(checkCudaError()!=0) return ErrorCode::CUDA_ERROR;
+#       pragma endregion
+
+        *pixels = generatedPixels;
+        cout<<"Render Finished in cuda"<<endl;
+        return ErrorCode::SUCCESS;
+        }
     }
-    else if (globalEnv != RenderEnv::CUDA) {
-        return ErrorCode::ENV_NOT_SUPPORT;
-    }
-
-    int height = renderConfig.height;
-    int width  = renderConfig.width;
-
-    // check device
-    cudaDeviceProp device;
-    cudaGetDeviceProperties(&device, 0);
-    auto maxThreadPerBlock = device.maxThreadsPerBlock;
-    auto sharedMenPerBlockKb = device.sharedMemPerBlock;
-
-    // check end
-
-    TextureInfo*    gpuTextureBuffer;
-    MaterialInfo*   gpuMaterialBuffer;
-    ObjectInfo*     gpuObjectBuffer;
-
-    cudaMalloc((void**)&gpuTextureBuffer,
-        textureBuffer.size()*sizeof(TextureInfo));
-    cudaMalloc((void**)&gpuMaterialBuffer,
-        materialBuffer.size()*sizeof(MaterialInfo));
-    cudaMalloc((void**)&gpuObjectBuffer,
-        objectBuffer.size()*sizeof(ObjectInfo));
-
-    cudaMemcpy(gpuTextureBuffer, &textureBuffer[0],
-        textureBuffer.size()*sizeof(TextureInfo), cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuMaterialBuffer, &materialBuffer[0],
-        materialBuffer.size()*sizeof(MaterialInfo), cudaMemcpyHostToDevice);
-    cudaMemcpy(gpuObjectBuffer, &objectBuffer[0],
-        objectBuffer.size()*sizeof(ObjectInfo), cudaMemcpyHostToDevice);
-
-    Vec3* generatedPixels;
-    cudaMallocManaged(&generatedPixels, sizeof(Vec3)*width*height);
-
-    dim3 blockNum(height, width);
-    dim3 threadNum(256);
-    renderTask<<<blockNum, threadNum>>>(generatedPixels, width, height);
-
-    cudaDeviceSynchronize();
-
-    *pixels = generatedPixels;
-
-
-    return ErrorCode::SUCCESS;
 }
-

@@ -19,6 +19,8 @@ namespace Renderer
         int width = 960;
         int height = 540;
         bool gamma = true;
+        int depth = 3;
+        int sampleNums = 256;
     };
 
     ErrorCode init(RenderEnv env);
@@ -37,6 +39,7 @@ namespace Renderer
             {
                 float r, g, b;
             };
+            float d[3];
         };
         
     };

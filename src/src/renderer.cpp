@@ -1,6 +1,7 @@
 #include "renderer.hpp"
 #include "renderInfo.hpp"
-#include "cudaRenderer.hpp"
+#include "sobol.hpp"
+#include "cuda/include/cudaRenderer.hpp"
 #include <vector>
 
 using namespace std;
@@ -20,6 +21,7 @@ namespace Renderer
     std::vector<ObjectInfo> objectBuffer{};
 
     ErrorCode init(RenderEnv env) {
+        initSobolSequence();
         switch (env)
         {
         case RenderEnv::CPU:
@@ -90,8 +92,14 @@ namespace Renderer
         temp.id       = index;
         temp.material = material;
         temp.i1       = addVertex(p1);
+        temp.v1       = {
+            p1.x+p2.x+p3.x/3,
+            p1.y+p2.y+p3.y/3,
+            p1.z+p2.z+p3.z/3
+        };
         addVertex(p2);
         addVertex(p3);
+        objectBuffer.push_back(temp);
         return index;
     }
 

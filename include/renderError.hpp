@@ -12,7 +12,8 @@ namespace Renderer
         SUCCESS,
         PLATFORM_NOT_SUPPORT_CUDA,
         ENV_NOT_SUPPORT,
-        NOT_INIT
+        NOT_INIT,
+        CUDA_ERROR
     };
 
     struct RenderError

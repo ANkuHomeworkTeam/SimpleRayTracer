@@ -26,6 +26,7 @@ namespace Renderer
         Solid
     };
 
+    
     struct MaterialInfo
     {
         MaterialType    type;
@@ -38,6 +39,18 @@ namespace Renderer
         float           f2;
         float           f3;
     };
+    /*
+    struct MaterialInfo
+    {
+        MaterialType    type;
+        id_t            id;
+        // diffuse or reflect's attenuation
+        id_t            texture;
+        float           glossy;
+        // Phong reflection
+        float           phongShininess;
+    };
+    */
 
     struct ObjectInfo
     {
