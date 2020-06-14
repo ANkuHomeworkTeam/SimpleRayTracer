@@ -16,6 +16,8 @@ namespace Renderer
         Vec3 getSobol(int index);
         __device__
         Vec3 getSobolNormalized(int index);
+        __device__
+        Vec3 getRandomNormalizedVec3();
     } // namespace Cuda
 } // namespace Renderer
 

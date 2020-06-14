@@ -28,7 +28,9 @@ namespace Renderer
             sizeof(Vec3)*SOBOL_SEQUENCE_CYCLE);
             Vec3* normalized = new Vec3[SOBOL_SEQUENCE_CYCLE];
             for(int i=0; i<SOBOL_SEQUENCE_CYCLE; i++) {
-                normalized[i] = normalize(sobolSequence[i]);
+                auto v = sobolSequence[i] - 0.5;
+                if (length(v) < 0.001f) v = { 1, 1, 1 };
+                normalized[i] = normalize(v);
             }
             cudaMemcpyToSymbol(gpuSobolSequenceNormalized, normalized,
             sizeof(Vec3)*SOBOL_SEQUENCE_CYCLE);
@@ -48,11 +50,19 @@ namespace Renderer
         }
         __device__
         Vec3 getSobolNormalized(int index) {
-            return gpuSobolSequenceNormalized[index%SOBOL_SEQUENCE_CYCLE];
+            __shared__
+            static int counter;
+            atomicAdd(&counter, 1);
+            return gpuSobolSequenceNormalized[(index+counter)%SOBOL_SEQUENCE_CYCLE];
         }
         __device__
         float getRandom() {
             return curand_uniform(&cState[threadIdx.x]);
+        }
+
+        __device__
+        Vec3 getRandomNormalizedVec3() {
+            return normalize({getRandom() - 0.5f, getRandom() - 0.5f, getRandom() - 0.5f});
         }
     } // namespace Cuda
 } // namespace Renderer

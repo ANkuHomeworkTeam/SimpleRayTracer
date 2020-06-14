@@ -1,5 +1,6 @@
 #include "details.hpp"
 #include "maths/random.hpp"
+#include <stdio.h>
 namespace Renderer
 {
     namespace Cuda
@@ -53,15 +54,15 @@ namespace Renderer
         }
         __device__
         Ray getRay(float s, float t) {
-            float rdx = getRandom();
-            float rdy = getRandom();
+            float rdx = getSobol(threadIdx.x).x*rayGenerator.lenRadius;
+            float rdy = getSobol(threadIdx.x).y*rayGenerator.lenRadius;
             Vec3 offset = rayGenerator.u*rdx + rayGenerator.v*rdy;
             return Ray{
                 rayGenerator.position + offset,
-                rayGenerator.lowerLeft
+                normalize(rayGenerator.lowerLeft
                 + s*rayGenerator.horizontal
                 + t*rayGenerator.vertical
-                - rayGenerator.position -  offset
+                - rayGenerator.position -  offset)
             };
         }
 #   pragma endregion

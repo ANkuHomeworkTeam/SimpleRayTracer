@@ -12,7 +12,8 @@ namespace Renderer
         LAMBERTAIN,
         PHONG,
         SPECULAR,
-        GLASS  
+        GLASS,
+        EMITTED,
     };
 
     enum class ObjectType
@@ -26,31 +27,36 @@ namespace Renderer
         Solid
     };
 
-    
+    /**
+     * deprecate
+     * struct MaterialInfo
+     * {
+     *     MaterialType    type;
+     *     id_t            id;
+     *     id_t            texture;
+     *     Vec3            v1;
+     *     Vec3            v2;
+     *     Vec3            v3;
+     *     float           f1;
+     *     float           f2;
+     *     float           f3;
+     * };
+     */
     struct MaterialInfo
     {
         MaterialType    type;
         id_t            id;
+        // diffuse or reflect's attenuation (lambertain)
         id_t            texture;
-        Vec3            v1;
-        Vec3            v2;
-        Vec3            v3;
-        float           f1;
-        float           f2;
-        float           f3;
-    };
-    /*
-    struct MaterialInfo
-    {
-        MaterialType    type;
-        id_t            id;
-        // diffuse or reflect's attenuation
-        id_t            texture;
+        // specular
         float           glossy;
         // Phong reflection
         float           phongShininess;
+        // light
+        float           luminance;
+        int             luminanceAttenuation;
+        float           luminanceDistance;
     };
-    */
 
     struct ObjectInfo
     {

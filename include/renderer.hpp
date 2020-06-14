@@ -20,7 +20,7 @@ namespace Renderer
         int height = 540;
         bool gamma = true;
         int depth = 3;
-        int sampleNums = 256;
+        int sampleNums = 512;
     };
 
     ErrorCode init(RenderEnv env);
@@ -49,6 +49,11 @@ namespace Renderer
     namespace Material
     {
         id_t createLambertain(id_t texture);
+        id_t createEmitted(id_t texture,
+            float  luminance,
+            int    luminanceAttenuation,
+            float  luminanceDistance);
+        id_t createSpecular(id_t texture, float glossy);
     };
 
     namespace Object

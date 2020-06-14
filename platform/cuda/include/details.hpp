@@ -23,6 +23,8 @@ namespace Renderer
         void initRenderConfig();
         __device__
         const RenderConfig& getRenderConfig();
+        __device__
+        Ray getRay(float s, float t);
 
     } // namespace Cuda
 } // namespace Renderer

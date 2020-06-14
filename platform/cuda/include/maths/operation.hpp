@@ -47,6 +47,10 @@ namespace Renderer
         Vec3 div(const Vec3& v, float f) {
             return { v.x / f, v.y / f, v.z / f };
         }
+        __host__ __device__ inline
+        bool equal(const Vec3& v1, const Vec3& v2) {
+            return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z;
+        }
 
         __host__ __device__ inline
         Vec3 sqrt(const Vec3& v) {
@@ -142,6 +146,11 @@ namespace Renderer
         Vec3 operator/(const Vec3& v, float f) {
             return div(v, f);
         }
+        __host__ __device__ inline
+        bool operator== (const Vec3& v1, const Vec3& v2) {
+            return equal(v1, v2);
+        }
+    
     } // namespace Cuda
     
 } // namespace Renderer

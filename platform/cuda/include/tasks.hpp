@@ -11,6 +11,7 @@ namespace Renderer
     {
         __global__
         void renderTask(Vec3* pixels);
+        __global__ void gammaTask(Vec3* pixels);
     } // namespace Cuda
     
 } // namespace Renderer

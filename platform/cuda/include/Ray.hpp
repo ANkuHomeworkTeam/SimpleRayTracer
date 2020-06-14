@@ -5,6 +5,9 @@
 #include "renderer.hpp"
 #include "maths/operation.hpp"
 #include <cuda_runtime.h>
+#include <stdio.h>
+
+#define PRINT(v) printf(" [ %f, %f, %f ] \n", v.x, v.y, v.z)
 
 namespace Renderer
 {
@@ -18,7 +21,9 @@ namespace Renderer
             Ray(const Vec3& origin, const Vec3& direction):
                 origin(origin), direction(direction)
             {}
-            Vec3 at(float t) {
+            Ray() = default;
+            __device__
+            Vec3 at(float t) const {
                 return origin+t*direction;
             }
         };

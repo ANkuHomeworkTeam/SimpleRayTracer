@@ -60,9 +60,14 @@ namespace Renderer
 
 #       pragma region RENDER
         Vec3* generatedPixels;
-        cudaMallocManaged(&generatedPixels, sizeof(Vec3)*width*height);
+        cudaMallocManaged((void**)&generatedPixels, sizeof(Vec3)*width*height);
 
         renderTask<<<blockInfo, threadInfo>>>(generatedPixels);
+
+        // cudaDeviceSynchronize();
+
+        if(renderConfig.gamma)
+            gammaTask<<<blockInfo, 1>>>(generatedPixels);
 
         cudaDeviceSynchronize();
 
@@ -70,6 +75,9 @@ namespace Renderer
 #       pragma endregion
 
         *pixels = generatedPixels;
+
+        //for (int i = 0; i < 960*100; i++)
+        //   cout<<"[ "<<(*pixels)[i].x<<", "<<(*pixels)[i].y<<", "<<(*pixels)[i].z<<"]"<<endl;
         cout<<"Render Finished in cuda"<<endl;
         return ErrorCode::SUCCESS;
         }

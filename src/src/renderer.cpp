@@ -73,6 +73,33 @@ namespace Renderer
         return index;
     }
 
+    id_t Material::createSpecular(id_t texture, float glossy) {
+        MaterialInfo temp;
+        if (glossy > 0.99) glossy = 0.99; 
+        int index    = materialBuffer.size();
+        temp.type    = MaterialType::SPECULAR;
+        temp.id      = index;
+        temp.texture = texture;
+        temp.glossy  = glossy;
+        materialBuffer.push_back(temp);
+        return index;
+    }
+
+    id_t Material::createEmitted(id_t texture,
+            float  luminance,
+            int    luminanceAttenuation,
+            float  luminanceDistance) {
+        MaterialInfo temp;
+        int index           = materialBuffer.size();
+        temp.type           = MaterialType::EMITTED;
+        temp.luminance      = luminance;
+        temp.luminanceAttenuation = luminanceAttenuation;
+        temp.luminanceDistance = luminanceDistance;
+        temp.texture = texture;
+        materialBuffer.push_back(temp);
+        return index;
+    }
+
     id_t Object::createSphere(const Vec3& position, float radius, id_t material) {
         ObjectInfo temp;
         int index     = objectBuffer.size();

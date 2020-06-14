@@ -22,17 +22,43 @@ void outputPNG(Vec3* pixels, int width, int height, const char* fileName) {
 }
 
 int main() {
-    int height = 540;
+    int height = 960;
     int width = 960;
 
     init(RenderEnv::CUDA);
     Vec3* pixels;
     setRenderConfig(width, height, true);
-    setCamera(40.f, 1.f, 0.f, 10.f, {278.f, 278.f, -750.f}, {278.f, 278.f, 0});
+    setCamera(40.f, 1.f, 10.f, 0.0f, {278.f, 278.f, -750.f}, {278.f, 278.f, 0});
 
-    Texture::createSolid({0.5, 0.4, 0.3});
-    Material::createLambertain(1);
-    Object::createTriangle({555, 0, 0},{555, 555, 0},{0, 0, 0}, 1);
+    auto whiteT = Texture::createSolid({ .73, .73, .73 });
+    auto redT   = Texture::createSolid({ .2f, .05f, .05f });
+    auto greenT = Texture::createSolid({ .12f, .45f, .15f });
+    auto whiteW = Material::createLambertain(whiteT);
+    auto redW   = Material::createLambertain(redT);
+    auto greenW = Material::createLambertain(greenT);
+    auto mirror = Material::createSpecular(0, 0.f);
+
+    auto light  = Material::createEmitted(0, 1.0, 0, 0);
+
+    Object::createTriangle({555, 0, 555}, {0, 0, 555}, {0, 0, 0}, whiteW);
+    Object::createTriangle({555, 0, 555}, {555, 0, 0}, {0, 0, 0}, whiteW);
+
+    Object::createTriangle({555, 0, 555},{555, 555, 555},{0, 0, 555}, whiteW);
+    Object::createTriangle({0, 555, 555},{0, 0, 555}, {555, 555, 555}, whiteW);
+
+    Object::createTriangle({555, 555, 555}, {0, 555, 555}, {0, 555, 0}, whiteW);
+    Object::createTriangle({555, 555, 555}, {555, 555, 0}, {0, 555, 0}, whiteW);
+
+    Object::createTriangle({555, 555, 555}, {555, 0, 555}, {555, 0, 0}, redW);
+    Object::createTriangle({555, 555, 555}, {555, 555, 0}, {555, 0, 0}, redW);
+
+    Object::createTriangle({0, 555, 555}, {0, 0, 555}, {0, 0, 0}, greenW);
+    Object::createTriangle({0, 555, 555}, {0, 555, 0}, {0, 0, 0}, greenW);
+
+    Object::createTriangle({378, 554, 378}, {178, 554, 378}, {178, 554, 178}, light);
+    Object::createTriangle({378, 554, 378}, {378, 554, 178}, {178, 554, 178}, light);
+    
+    Object::createSphere({278, 100, 278}, 100, mirror);
     render(&pixels);
     
     outputPNG(pixels, width, height, "../cudaResult.png");
