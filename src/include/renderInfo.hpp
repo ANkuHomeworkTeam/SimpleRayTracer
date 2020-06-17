@@ -65,13 +65,10 @@ namespace Renderer
         id_t            material;
         Vec3            v1;
         Vec3            v2;
-        Vec3            v3;
         float           f1;
         float           f2;
-        float           f3;
         int             i1;
         int             i2;
-        int             i3;
     };
 
     struct TextureInfo
@@ -83,10 +80,11 @@ namespace Renderer
 
     extern RenderEnv globalEnv;
 
-    extern std::vector<Vec3> vertexBuffer;
-    extern std::vector<TextureInfo> textureBuffer;
-    extern std::vector<MaterialInfo> materialBuffer;
-    extern std::vector<ObjectInfo> objectBuffer;
+    extern std::vector<Vec3>            vertexBuffer;
+    extern std::vector<TextureInfo>     textureBuffer;
+    extern std::vector<MaterialInfo>    materialBuffer;
+    extern std::vector<ObjectInfo>      objectBuffer;
+    extern std::vector<id_t>            lightBuffer;
 
     extern Camera cam;
 

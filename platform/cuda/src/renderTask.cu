@@ -48,6 +48,7 @@ namespace Renderer
             //color = pixels[castIndex(pX, pY)];
             //printf("final -> [ %f, %f, %f ]\n", color.r, color.g, color.b);
 #       pragma endregion
+            // printf("done!\n");
         }
 
 #   pragma region TRACE
@@ -56,6 +57,8 @@ namespace Renderer
             int depth = getRenderConfig().depth;
             auto r = ray;
             Vec3 color = { 1, 1, 1 };
+            bool isDirect = false;
+            id_t directObj = 0;
             for (int i = 0; i < depth; i++) {
                 if (r.direction == Vec3{ 0, 0, 0 }) {
                     break;
@@ -64,7 +67,26 @@ namespace Renderer
                 if (hitRecord) {
                     auto scattered = shade(hitRecord->material, r, hitRecord->t, hitRecord->hitPoint, hitRecord->normal);
                     r = scattered.ray;
-                    color = color * scattered.attenuation;
+                    if (isDirect) {
+                        auto type = getMaterial(getObject(hitRecord->object).material).type;
+                        if (type == MaterialType::EMITTED) {
+                            color = color * scattered.attenuation;
+                            break;
+                        }
+                        else if (type == MaterialType::SPECULAR
+                            || type == MaterialType::GLASS) {
+                            continue;
+                        }
+                        else {
+                            color = { 0.0, 0.0, 0.0 };
+                            break;
+                        }
+                    }
+                    else {
+                        color = color * scattered.attenuation;
+                    }
+                    isDirect = scattered.isDirect;
+                    directObj = scattered.directObj;
                 }
                 else {
                     color = { 0, 0, 0 };

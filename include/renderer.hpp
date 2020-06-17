@@ -19,7 +19,7 @@ namespace Renderer
         int width = 960;
         int height = 540;
         bool gamma = true;
-        int depth = 3;
+        int depth = 8;
         int sampleNums = 512;
     };
 

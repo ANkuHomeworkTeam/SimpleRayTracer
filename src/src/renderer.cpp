@@ -19,6 +19,7 @@ namespace Renderer
     std::vector<TextureInfo> textureBuffer{};
     std::vector<MaterialInfo> materialBuffer{};
     std::vector<ObjectInfo> objectBuffer{};
+    std::vector<id_t> lightBuffer{};
 
     ErrorCode init(RenderEnv env) {
         initSobolSequence();
@@ -100,6 +101,18 @@ namespace Renderer
         return index;
     }
 
+    inline
+    void recordEmittedObject(id_t material, id_t object, ObjectInfo& obj) {
+        MaterialInfo& m = materialBuffer[material];
+        if (m.type == MaterialType::EMITTED && m.luminance > 0.f) {
+            lightBuffer.push_back(object);
+            // obj.emmited = true;
+        }
+        else {
+            // obj.emmited = false;
+        }
+    }
+
     id_t Object::createSphere(const Vec3& position, float radius, id_t material) {
         ObjectInfo temp;
         int index     = objectBuffer.size();
@@ -108,6 +121,7 @@ namespace Renderer
         temp.material = material;
         temp.v1       = position;
         temp.f1       = radius;
+        recordEmittedObject(material, index, temp);
         objectBuffer.push_back(temp);
         return index;
     }
@@ -120,12 +134,13 @@ namespace Renderer
         temp.material = material;
         temp.i1       = addVertex(p1);
         temp.v1       = {
-            p1.x+p2.x+p3.x/3,
-            p1.y+p2.y+p3.y/3,
-            p1.z+p2.z+p3.z/3
+            (p1.x+p2.x+p3.x)/3,
+            (p1.y+p2.y+p3.y)/3,
+            (p1.z+p2.z+p3.z)/3
         };
         addVertex(p2);
         addVertex(p3);
+        recordEmittedObject(material, index, temp);
         objectBuffer.push_back(temp);
         return index;
     }

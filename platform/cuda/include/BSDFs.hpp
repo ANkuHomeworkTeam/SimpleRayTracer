@@ -21,6 +21,8 @@ namespace Renderer
         {
             Vec3 attenuation;
             Ray ray;
+            bool isDirect;
+            id_t directObj;
         };
 
         __device__

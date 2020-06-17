@@ -1,5 +1,6 @@
 #include "objects.hpp"
-#include <iostream>
+#include "maths/random.hpp"
+#include <stdio.h>
 namespace Renderer
 {
     using namespace thrust;
@@ -11,6 +12,10 @@ namespace Renderer
         Vec3* gpuVertexBuffer;
         __device__
         int objectNum;
+        __device__
+        id_t* gpuLightBuffer;
+        __device__
+        int lightNum;
 
         void initObjects() {
             Vec3* tmpV;
@@ -23,6 +28,12 @@ namespace Renderer
             cudaMemcpyToSymbol(gpuObjectBuffer, &tmpO, sizeof(ObjectInfo*));
             int size = objectBuffer.size();
             cudaMemcpyToSymbol(objectNum, &size, sizeof(int));
+            id_t* tmpL;
+            cudaMalloc((void**)&tmpL, sizeof(id_t)*lightBuffer.size());
+            cudaMemcpy(tmpL, &lightBuffer[0], sizeof(id_t)*lightBuffer.size(), cudaMemcpyHostToDevice);
+            cudaMemcpyToSymbol(gpuLightBuffer, &tmpL, sizeof(id_t*));
+            int lsize = lightBuffer.size();
+            cudaMemcpyToSymbol(lightNum, &lsize, sizeof(id_t));
             // cudaMemcpy
         }
 
@@ -40,10 +51,40 @@ namespace Renderer
             return objectNum;
         }
 
+        __device__
+        LightSampling sampleRandomLight(const Vec3& from, const Vec3& faceDirection) {
+            Vec3 samplePoint;
+            id_t sampleId;
+            id_t lightId = std::floor(getRandom()*float(lightNum));
+            for (int i=0; i<lightNum; i++) {
+                float discrim;
+                sampleId = gpuLightBuffer[(lightId + i)%lightNum];
+                ObjectInfo& obj = gpuObjectBuffer[sampleId];
+                if (obj.type == ObjectType::Triangle) {
+                    float u = getRandom();
+                    float v = getRandom() * (1 - u);
+                    Vec3 v1 = gpuVertexBuffer[obj.i1];
+                    Vec3 v2 = gpuVertexBuffer[obj.i1 + 1];
+                    Vec3 v3 = gpuVertexBuffer[obj.i1 + 2];
+                    Vec3 e1 = v2 - v1;
+                    Vec3 e2 = v3 - v1;
+                    samplePoint = v1 + e1 * u + e2 * v;
+                    discrim = dot(samplePoint - from, faceDirection);
+                }
+                else if (obj.type == ObjectType::Sphere) {
+                    samplePoint = obj.v1 + getSobolNormalized(threadIdx.x);
+                    discrim = dot(samplePoint - from, faceDirection);
+                }
+                if (discrim > 0) return createLightSampling(sampleId, samplePoint);
+            }
+            return nullopt;
+        }
+
 #   pragma region HIT_TEST
 
         __device__
-        HitRecord hit(const ObjectInfo& obj, const Ray& ray, float min = 0.f, float max = FLOAT_INF) {
+        HitRecord hit(id_t object, const Ray& ray, float min = 0.f, float max = FLOAT_INF) {
+            ObjectInfo& obj = gpuObjectBuffer[object];
             if (obj.type == ObjectType::Sphere) {
                 Vec3 oc = ray.origin - obj.v1;
                 float a = dot(ray.direction, ray.direction);
@@ -57,14 +98,14 @@ namespace Renderer
                         auto hitPoint = ray.at(temp);
                         auto normal = (hitPoint - obj.v1) / obj.f1;
                         if (dot(normal, ray.direction)>0) normal = neg(normal);
-                        return createHitRecord(temp, hitPoint, normal, obj.material);
+                        return createHitRecord(temp, object, hitPoint, normal, obj.material);
                     }
                     temp = (-b + sqrtdiscrim) / a;
                     if (temp < max && temp >= min) {
                         auto hitPoint = ray.at(temp);
                         auto normal = (hitPoint - obj.v1) / obj.f1;
                         if (dot(normal, ray.direction)>0) normal = neg(normal);
-                        return createHitRecord(temp, hitPoint, normal, obj.material);
+                        return createHitRecord(temp, object, hitPoint, normal, obj.material);
                     }
                 }
                 return nullopt;
@@ -103,7 +144,7 @@ namespace Renderer
                 if (dot(normal, ray.direction) > 0) {
                     normal = -normal;
                 }
-                return createHitRecord(t, ray.at(t), normal, obj.material);
+                return createHitRecord(t, object, ray.at(t), normal, obj.material);
             }
             return nullopt;
         }
@@ -114,7 +155,7 @@ namespace Renderer
             float closet = FLOAT_INF;
             HitRecord hitRecord = nullopt;
             for (int i = 0; i < size; i++) {
-                auto record = hit(getObject(i), ray, 0.0001, closet);
+                auto record = hit(i, ray, 0.0001, closet);
                 if (record) {
                     closet = record->t;
                     hitRecord = record;

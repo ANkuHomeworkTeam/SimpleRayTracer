@@ -1,6 +1,7 @@
 #include "BSDFs.hpp"
 #include "maths/random.hpp"
 #include <stdio.h>
+#include "objects.hpp"
 
 namespace Renderer
 {
@@ -73,24 +74,39 @@ namespace Renderer
             const MaterialInfo& m = getMaterial(material);
             Vec3 out = { 0, 0, 0 };
             Vec3 in = -ray.direction;
-            Vec3 sample = {1, 1, 1};
+            Vec3 sample = {0, 0, 0};
+            bool isDirect = false;
+            id_t directObj = 0;
             switch (m.type)
             {
             case MaterialType::LAMBERTAIN:
-                // out = normal + getSobolNormalized(threadIdx.x);
-                out = normal + normalize(getSobolNormalized(threadIdx.x)+getRandomNormalizedVec3()*0.2);
-                // PRINT(out);
-                // printf("sample: [ %f, %f, %f ]\n", getSobolNormalized(threadIdx.x).x, getSobolNormalized(threadIdx.x).y, getSobolNormalized(threadIdx.x).z);
-                sample = BRDF(material, MaterialType::LAMBERTAIN, hitPoint, in, out) * M_PI *  2 * cos(out, normal);
-                //printf("id: %d, cos-> %f\n", threadIdx.x, dot(out, normal));
-                // PRINT(sample);
-                // printf("sample: [ %f, %f, %f ]\n", sample.x, sample.y, sample.z);
+                if (getRandom() > 0.45f) {
+                    out = normalize(normal + getRandomNormalizedVec3());
+                    sample = BRDF(material, MaterialType::LAMBERTAIN, hitPoint, in, out) * M_PI *  2 * cos(out, normal);
+                }
+                else {
+                    isDirect = true;
+                    auto lightSampling = sampleRandomLight(hitPoint, normal);
+                    if (lightSampling) {   
+                        out = normalize(lightSampling->samplePoint - hitPoint);
+                        directObj = lightSampling->objId;
+                        sample = BRDF(material, MaterialType::LAMBERTAIN, hitPoint, in, out) * M_PI;
+                    }
+                }
+                break;
+            case MaterialType::PHONG:
+                if (getRandom() > 0.5) {
+
+                }
+                else {
+                    
+                }
                 break;
             case MaterialType::EMITTED:
                 break;
             case MaterialType::SPECULAR:
-                out = (ray.direction - 2*dot(ray.direction, normal)*normal)+getSobolNormalized(threadIdx.x)*m.glossy;
-                sample = BRDF(material, MaterialType::SPECULAR, hitPoint, in, out) * M_PI * (cos(out, normal)*0.9 + 0.1);
+                out = normalize((ray.direction - 2*dot(ray.direction, normal)*normal))+getSobolNormalized(threadIdx.x)*m.glossy;
+                sample = BRDF(material, MaterialType::SPECULAR, hitPoint, in, out) * M_PI ;// (cos(out, normal)*0.9 + 0.1);
                 break;
             default:
                 break;
@@ -99,7 +115,9 @@ namespace Renderer
             // printf("sample: [ %f, %f, %f ]\n", attenuation.x, attenuation.y, attenuation.z);
             return {
                 attenuation,
-                Ray{hitPoint, normalize(out)}
+                Ray{hitPoint, out},
+                isDirect,
+                directObj
             };
         }
 
