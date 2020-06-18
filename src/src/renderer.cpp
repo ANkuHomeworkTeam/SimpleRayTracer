@@ -86,6 +86,29 @@ namespace Renderer
         return index;
     }
 
+    id_t Material::createPhong(id_t texture, const Vec3& ks, float shiness) {
+        MaterialInfo temp;
+        int index           = materialBuffer.size();
+        temp.type           = MaterialType::PHONG;
+        temp.id             = index;
+        temp.texture        = texture;
+        temp.phongKs        = ks;
+        temp.phongShininess = shiness;
+        materialBuffer.push_back(temp);
+        return index;
+    }
+
+    id_t Material::createGlass(id_t texture, float n) {
+        MaterialInfo temp;
+        int index           = materialBuffer.size();
+        temp.type           = MaterialType::GLASS;
+        temp.id             = index;
+        temp.texture        = texture;
+        temp.n              = n;
+        materialBuffer.push_back(temp);
+        return index;
+    }
+
     id_t Material::createEmitted(id_t texture,
             float  luminance,
             int    luminanceAttenuation,
@@ -169,11 +192,13 @@ namespace Renderer
         };
     }
 
-    void setRenderConfig(int width, int height, bool gamma) {
+    void setRenderConfig(int width, int height, int depth, int sampleNums, bool gamma) {
         renderConfig = {
             .width = width,
             .height = height,
-            .gamma = gamma
+            .gamma = gamma,
+            .depth = depth,
+            .sampleNums = sampleNums
         };
     }
 

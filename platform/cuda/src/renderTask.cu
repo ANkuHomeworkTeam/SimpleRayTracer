@@ -104,9 +104,9 @@ namespace Renderer
             int height = getRenderConfig().height;
             int pixelX = blockIdx.x;
             int pixelY = blockIdx.y;
-            if (pixels[pixelX + w*pixelY].x > 1) pixels[pixelX + w*pixelY].x = 1;
-            if (pixels[pixelX + w*pixelY].y > 1) pixels[pixelX + w*pixelY].y = 1;
-            if (pixels[pixelX + w*pixelY].z > 1) pixels[pixelX + w*pixelY].z = 1;
+            if (pixels[pixelX + w*pixelY].x > 0.99f) pixels[pixelX + w*pixelY].x = 0.99;
+            if (pixels[pixelX + w*pixelY].y > 0.99f) pixels[pixelX + w*pixelY].y = 0.99;
+            if (pixels[pixelX + w*pixelY].z > 0.99f) pixels[pixelX + w*pixelY].z = 0.99;
             pixels[pixelX + w*pixelY] = sqrt(pixels[pixelX + w*pixelY]);
         }
     } // namespace Cuda

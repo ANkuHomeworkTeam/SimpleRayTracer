@@ -27,7 +27,7 @@ int main() {
 
     init(RenderEnv::CUDA);
     Vec3* pixels;
-    setRenderConfig(width, height, true);
+    setRenderConfig(width, height, 5, 256, true);
     setCamera(40.f, 1.f, 10.f, 0.0f, {278.f, 278.f, -750.f}, {278.f, 278.f, 0});
 
     auto whiteT = Texture::createSolid({ .73, .73, .73 });
@@ -38,6 +38,13 @@ int main() {
     auto greenW = Material::createLambertain(greenT);
     auto mirror = Material::createSpecular(0, 0.f);
     auto glossyMirror = Material::createSpecular(0, 0.1f);
+    auto phong  = Material::createPhong(
+        // Texture::createSolid({.4, .6, .5}),
+        whiteT,
+        {1, 1, 1},
+        4
+    );
+    auto glass = Material::createGlass(0, 1.5);
 
     auto light  = Material::createEmitted(0, 1.0, 0, 0);
 
@@ -59,7 +66,7 @@ int main() {
     Object::createTriangle({378, 554, 378}, {178, 554, 378}, {178, 554, 178}, light);
     Object::createTriangle({378, 554, 378}, {378, 554, 178}, {178, 554, 178}, light);
     
-    Object::createSphere({100, 250, 100}, 50, whiteW);
+    Object::createSphere({100, 250, 100}, 50, glass);
 
     Object::createTriangle({100, 200, 100}, {100, 0, 50}, {50, 0, 100}, whiteW);
     Object::createTriangle({100, 200, 100}, {100, 0, 150}, {50, 0, 100}, whiteW);

@@ -51,7 +51,10 @@ namespace Renderer
         // specular
         float           glossy;
         // Phong reflection
+        Vec3            phongKs;
         float           phongShininess;
+        // Glass
+        float           n;
         // light
         float           luminance;
         int             luminanceAttenuation;

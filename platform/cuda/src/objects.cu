@@ -97,14 +97,12 @@ namespace Renderer
                     if (temp < max && temp >= min) {
                         auto hitPoint = ray.at(temp);
                         auto normal = (hitPoint - obj.v1) / obj.f1;
-                        if (dot(normal, ray.direction)>0) normal = neg(normal);
                         return createHitRecord(temp, object, hitPoint, normal, obj.material);
                     }
                     temp = (-b + sqrtdiscrim) / a;
                     if (temp < max && temp >= min) {
                         auto hitPoint = ray.at(temp);
                         auto normal = (hitPoint - obj.v1) / obj.f1;
-                        if (dot(normal, ray.direction)>0) normal = neg(normal);
                         return createHitRecord(temp, object, hitPoint, normal, obj.material);
                     }
                 }

@@ -53,7 +53,9 @@ namespace Renderer
             float  luminance,
             int    luminanceAttenuation,
             float  luminanceDistance);
+        id_t createGlass(id_t texture, float n);
         id_t createSpecular(id_t texture, float glossy);
+        id_t createPhong(id_t texture, const Vec3& ks, float shiness);
     };
 
     namespace Object
@@ -79,7 +81,7 @@ namespace Renderer
     void setCamera(float vfov, float aspect, float focusDistance,
         float aperture, Vec3 position, Vec3 lookat);
 
-    void setRenderConfig(int width, int height, bool gamma = true);
+    void setRenderConfig(int width, int height, int depth = 8, int sampleNums = 512, bool gamma = true);
 
 };
 
