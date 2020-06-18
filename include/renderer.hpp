@@ -61,7 +61,7 @@ namespace Renderer
     namespace Object
     {
         id_t createSphere(const Vec3& position, float radius, id_t material);
-        id_t createTriangle(const Vec3& p1, const Vec3& p2, const Vec3& p3, id_t material);
+        id_t createTriangle(const Vec3& p1, const Vec3& p2, const Vec3& p3, const Vec3& anchor ,id_t material);
     };
 
     namespace Texture{

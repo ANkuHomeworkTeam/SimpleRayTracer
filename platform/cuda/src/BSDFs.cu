@@ -142,7 +142,6 @@ namespace Renderer
             case MaterialType::GLASS:
             {
                 // reflect & refract
-                float reflectRatio = 0;
                 Vec3 towardsRayNormal = normal;
                 float eta = m.n;
                 float cos1 = dot(in, normal);
@@ -157,7 +156,7 @@ namespace Renderer
                     float r1 = (eta*cos1 - cos2)/(eta*cos1+cos2);
                     float r2 = (cos1 - eta*cos2)/(cos1+eta*cos2);
                     float reflectRatio = 0.5*(r1*r1+r2*r2);
-                    if (getRandom() > reflectRatio) {
+                    if (getRandom() > (reflectRatio)) {
                         out = refract(towardsRayNormal, ray.direction, cos1, cos2, eta);
                         sample = BTDF(material);
                     }

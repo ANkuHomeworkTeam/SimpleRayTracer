@@ -94,13 +94,13 @@ namespace Renderer
                 float sqrtdiscrim = std::sqrt(discriminant);
                 if (discriminant > 0) {
                     float temp = (-b - sqrtdiscrim) / a;
-                    if (temp < max && temp >= min) {
+                    if (temp < max && temp > min) {
                         auto hitPoint = ray.at(temp);
                         auto normal = (hitPoint - obj.v1) / obj.f1;
                         return createHitRecord(temp, object, hitPoint, normal, obj.material);
                     }
                     temp = (-b + sqrtdiscrim) / a;
-                    if (temp < max && temp >= min) {
+                    if (temp < max && temp > min) {
                         auto hitPoint = ray.at(temp);
                         auto normal = (hitPoint - obj.v1) / obj.f1;
                         return createHitRecord(temp, object, hitPoint, normal, obj.material);
@@ -115,6 +115,7 @@ namespace Renderer
                 auto e1 = castVertex(1) - castVertex(0);
                 auto e2 = castVertex(2) - castVertex(0);
                 auto normal = normalize(cross(e1, e2));
+                auto anchor = obj.v2 - castVertex(0);
                 auto P = cross(ray.direction, e2);
                 float det = dot(e1, P);
                 Vec3 T;
@@ -139,7 +140,7 @@ namespace Renderer
                 float fInvDet = 1.f / det;
                 t *= fInvDet;
                 if (t >= max || t < min) return nullopt;
-                if (dot(normal, ray.direction) > 0) {
+                if (dot(normal, anchor) > 0) {
                     normal = -normal;
                 }
                 return createHitRecord(t, object, ray.at(t), normal, obj.material);

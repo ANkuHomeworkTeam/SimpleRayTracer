@@ -27,8 +27,8 @@ int main() {
 
     init(RenderEnv::CUDA);
     Vec3* pixels;
-    setRenderConfig(width, height, 5, 256, true);
-    setCamera(40.f, 1.f, 10.f, 0.0f, {278.f, 278.f, -750.f}, {278.f, 278.f, 0});
+    setRenderConfig(width, height, 4, 128, true);
+    setCamera(40.f, 1.f, 900.f, 200.0f, {278.f, 278.f, -750.f}, {278.f, 278.f, 0});
 
     auto whiteT = Texture::createSolid({ .73, .73, .73 });
     auto redT   = Texture::createSolid({ .2f, .05f, .05f });
@@ -48,41 +48,41 @@ int main() {
 
     auto light  = Material::createEmitted(0, 1.0, 0, 0);
 
-    Object::createTriangle({555, 0, 555}, {0, 0, 555}, {0, 0, 0}, whiteW);
-    Object::createTriangle({555, 0, 555}, {555, 0, 0}, {0, 0, 0}, whiteW);
+    Object::createTriangle({555, 0, 555}, {0, 0, 555}, {0, 0, 0}, {0, -1, 0}, whiteW);
+    Object::createTriangle({555, 0, 555}, {555, 0, 0}, {0, 0, 0}, {0, -1, 0}, whiteW);
 
-    Object::createTriangle({555, 0, 555},{555, 555, 555},{0, 0, 555}, whiteW);
-    Object::createTriangle({0, 555, 555},{0, 0, 555}, {555, 555, 555}, whiteW);
+    Object::createTriangle({555, 0, 555},{555, 555, 555},{0, 0, 555}, {0,  0, 666}, whiteW);
+    Object::createTriangle({0, 555, 555},{0, 0, 555}, {555, 555, 555}, {0,  0, 666}, whiteW);
 
-    Object::createTriangle({555, 555, 555}, {0, 555, 555}, {0, 555, 0}, whiteW);
-    Object::createTriangle({555, 555, 555}, {555, 555, 0}, {0, 555, 0}, whiteW);
+    Object::createTriangle({555, 555, 555}, {0, 555, 555}, {0, 555, 0}, {0, 666, 0}, whiteW);
+    Object::createTriangle({555, 555, 555}, {555, 555, 0}, {0, 555, 0}, {0, 666, 0}, whiteW);
 
-    Object::createTriangle({555, 555, 555}, {555, 0, 555}, {555, 0, 0}, redW);
-    Object::createTriangle({555, 555, 555}, {555, 555, 0}, {555, 0, 0}, redW);
+    Object::createTriangle({555, 555, 555}, {555, 0, 555}, {555, 0, 0}, {666, 0, 0}, redW);
+    Object::createTriangle({555, 555, 555}, {555, 555, 0}, {555, 0, 0}, {666, 0, 0}, redW);
 
-    Object::createTriangle({0, 555, 555}, {0, 0, 555}, {0, 0, 0}, greenW);
-    Object::createTriangle({0, 555, 555}, {0, 555, 0}, {0, 0, 0}, greenW);
+    Object::createTriangle({0, 555, 555}, {0, 0, 555}, {0, 0, 0}, {-1, 0, 0}, greenW);
+    Object::createTriangle({0, 555, 555}, {0, 555, 0}, {0, 0, 0}, {-1, 0, 0}, greenW);
 
-    Object::createTriangle({378, 554, 378}, {178, 554, 378}, {178, 554, 178}, light);
-    Object::createTriangle({378, 554, 378}, {378, 554, 178}, {178, 554, 178}, light);
+    Object::createTriangle({378, 554, 378}, {178, 554, 378}, {178, 554, 178}, {0, 666, 0}, light);
+    Object::createTriangle({378, 554, 378}, {378, 554, 178}, {178, 554, 178}, {0, 666, 0}, light);
     
-    Object::createSphere({100, 250, 100}, 50, glass);
+    Object::createSphere({100, 250, 100}, 50, phong);
 
-    Object::createTriangle({100, 200, 100}, {100, 0, 50}, {50, 0, 100}, whiteW);
-    Object::createTriangle({100, 200, 100}, {100, 0, 150}, {50, 0, 100}, whiteW);
-    Object::createTriangle({100, 200, 100}, {150, 0, 100}, {100, 0, 150}, whiteW);
-    Object::createTriangle({100, 200, 100}, {150, 0, 100}, {100, 0, 50}, whiteW);
+    Object::createTriangle({100, 200, 100}, {100, 0, 50}, {50, 0, 100}, {100, 0, 100}, glass);
+    Object::createTriangle({100, 200, 100}, {100, 0, 150}, {50, 0, 100}, {100, 0, 100}, glass);
+    Object::createTriangle({100, 200, 100}, {150, 0, 100}, {100, 0, 150}, {100, 0, 100}, glass);
+    Object::createTriangle({100, 200, 100}, {150, 0, 100}, {100, 0, 50}, {100, 0, 100}, glass);
 
-    Object::createTriangle({300, 200, 150}, {150, 200, 350}, {350, 200, 500}, whiteW);
-    Object::createTriangle({300, 200, 150}, {500, 200, 300}, {350, 200, 500}, whiteW);
-    Object::createTriangle({300, 200, 150}, {150, 0, 350}, {300, 0, 150}, whiteW);
-    Object::createTriangle({300, 200, 150}, {150, 0, 350}, {150, 200, 350}, whiteW);
-    Object::createTriangle({300, 200, 150}, {500, 0 ,300}, {500, 200, 300}, whiteW);
-    Object::createTriangle({300, 200, 150}, {500, 0 ,300}, {300, 0, 150}, whiteW);
-    Object::createTriangle({350, 200, 500}, {500, 0 ,300}, {500, 200, 300}, whiteW);
-    Object::createTriangle({350, 200, 500}, {500, 0 ,300}, {350, 0, 500}, whiteW);
-    Object::createTriangle({350, 200, 500}, {150, 0, 350}, {350, 0, 500}, whiteW);
-    Object::createTriangle({350, 200, 500}, {150, 0, 350}, {150, 0, 350}, whiteW);
+    Object::createTriangle({300, 200, 150}, {150, 200, 350}, {350, 200, 500}, {325, 150, 325}, whiteW);
+    Object::createTriangle({300, 200, 150}, {500, 200, 300}, {350, 200, 500}, {325, 150, 325}, whiteW);
+    Object::createTriangle({300, 200, 150}, {150, 0, 350}, {300, 0, 150}, {325, 150, 325}, whiteW);
+    Object::createTriangle({300, 200, 150}, {150, 0, 350}, {150, 200, 350}, {325, 150, 325}, whiteW);
+    Object::createTriangle({300, 200, 150}, {500, 0 ,300}, {500, 200, 300}, {325, 150, 325}, whiteW);
+    Object::createTriangle({300, 200, 150}, {500, 0 ,300}, {300, 0, 150}, {325, 150, 325}, whiteW);
+    Object::createTriangle({350, 200, 500}, {500, 0 ,300}, {500, 200, 300}, {325, 150, 325}, whiteW);
+    Object::createTriangle({350, 200, 500}, {500, 0 ,300}, {350, 0, 500}, {325, 150, 325}, whiteW);
+    Object::createTriangle({350, 200, 500}, {150, 0, 350}, {350, 0, 500}, {325, 150, 325}, whiteW);
+    Object::createTriangle({350, 200, 500}, {150, 0, 350}, {150, 0, 350}, {325, 150, 325}, whiteW);
 
     render(&pixels);
     

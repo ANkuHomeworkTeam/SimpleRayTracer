@@ -149,7 +149,7 @@ namespace Renderer
         return index;
     }
 
-    id_t Object::createTriangle(const Vec3& p1, const Vec3& p2, const Vec3& p3, id_t material) {
+    id_t Object::createTriangle(const Vec3& p1, const Vec3& p2, const Vec3& p3, const Vec3& anchor, id_t material) {
         ObjectInfo temp;
         int index     = objectBuffer.size();
         temp.type     = ObjectType::Triangle;
@@ -161,6 +161,7 @@ namespace Renderer
             (p1.y+p2.y+p3.y)/3,
             (p1.z+p2.z+p3.z)/3
         };
+        temp.v2       = anchor;
         addVertex(p2);
         addVertex(p3);
         recordEmittedObject(material, index, temp);
