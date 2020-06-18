@@ -28,7 +28,7 @@ int main() {
     init(RenderEnv::CUDA);
     Vec3* pixels;
     setRenderConfig(width, height, 6, 512, true);
-    setCamera(40.f, 1.f, 900.f, 150.0f, {278.f, 278.f, -750.f}, {278.f, 278.f, 0});
+    setCamera(40.f, 1.f, 1.f, 0.0f, {278.f, 278.f, -750.f}, {278.f, 278.f, 0});
 
     auto whiteT = Texture::createSolid({ .73, .73, .73 });
     auto redT   = Texture::createSolid({ .2f, .05f, .05f });
